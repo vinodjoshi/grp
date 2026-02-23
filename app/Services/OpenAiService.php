@@ -16,6 +16,7 @@ class OpenAiService
         Skills: " . implode(', ', $profileData['skills'] ?? []) . "
         Risk Tolerance: {$profileData['risk_tolerance']}
         Confidence to Sell: {$profileData['confidence_to_sell']}
+        Location: {$profileData['location']}
         Assets: " . implode(', ', $profileData['assets'] ?? []) . "
 
         Suggest 3 best matching small business ideas.

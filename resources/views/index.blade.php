@@ -61,6 +61,31 @@
             color: white;
             cursor: pointer;
         }
+        .btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+        .loader {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .loader.active {
+            display: block;
+        }
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         .result-card {
             background: #f1f5f9;
             padding: 15px;
@@ -126,6 +151,14 @@
             @endforeach
         </select>
 
+        <label>Location</label>
+        <select name="location">
+            <option value="">-- Select Location --</option>
+            @foreach($locations as $loc)
+                <option value="{{ $loc->label }}">{{ $loc->label }}</option>
+            @endforeach
+        </select>
+
         <label>Assets You Have</label>
         <div class="checkbox-group">
             <label><input type="checkbox" name="assets[]" value="Stove"> Stove</label>
@@ -135,8 +168,13 @@
             <label><input type="checkbox" name="assets[]" value="Smartphone Only"> Smartphone Only</label>
         </div>
 
-        <button type="submit" class="btn">Find My Best Businesses</button>
+        <button type="submit" class="btn" id="submitBtn">Find My Best Businesses</button>
     </form>
+
+    <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <p>Finding your best business matches...</p>
+    </div>
 
     <div id="results"></div>
 </section>
@@ -147,6 +185,14 @@ document.getElementById("businessCoachForm").addEventListener("submit", function
 
     let formData = new FormData(this);
     let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    let loader = document.getElementById('loader');
+    let submitBtn = document.getElementById('submitBtn');
+    let resultsDiv = document.getElementById("results");
+
+    // Show loader and disable button
+    loader.classList.add('active');
+    submitBtn.disabled = true;
+    resultsDiv.innerHTML = "";
 
     fetch('/business-coach/recommend', {
         method: 'POST',
@@ -157,9 +203,9 @@ document.getElementById("businessCoachForm").addEventListener("submit", function
     })
     .then(res => res.json())
     .then(data => {
-
-        let resultsDiv = document.getElementById("results");
-        resultsDiv.innerHTML = "";
+        // Hide loader and enable button
+        loader.classList.remove('active');
+        submitBtn.disabled = false;
 
         if(data.success) {
 
@@ -195,6 +241,9 @@ document.getElementById("businessCoachForm").addEventListener("submit", function
         }
     })
     .catch(err => {
+        // Hide loader and enable button on error
+        loader.classList.remove('active');
+        submitBtn.disabled = false;
         console.error(err);
         alert("Something went wrong.");
     });

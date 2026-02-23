@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\CapitalBand;
 use App\Models\ConfidenceToSell;
+use App\Models\Location;
 use App\Models\RiskTolerance;
 use App\Models\Skill;
 use App\Models\TimeAvailability;
-use Illuminate\Http\Request;
 use App\Services\OpenAiService;
+use Illuminate\Http\Request;
+
 class IndexController extends Controller
 {
     protected $openAi;
@@ -28,13 +30,15 @@ class IndexController extends Controller
         $skills = Skill::query()->orderBy('label')->get();
         $riskTolerances = RiskTolerance::query()->orderBy('level')->get();
         $confidenceToSells = ConfidenceToSell::query()->orderBy('level')->get();
+        $locations = Location::query()->orderBy('label')->get();
 
         return view('index', compact(
             'capitalBands',
             'timeAvailabilities',
             'skills',
             'riskTolerances',
-            'confidenceToSells'
+            'confidenceToSells',
+            'locations'
         ));
     }
 
@@ -46,7 +50,8 @@ class IndexController extends Controller
             'skills' => 'array',
             'risk_tolerance' => 'required|string',
             'confidence_to_sell' => 'required|string',
-            'assets' => 'array'
+            'location' => 'required|string',
+            'assets' => 'array',
         ]);
 
         try {
@@ -54,12 +59,12 @@ class IndexController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $result
+                'data' => $result,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

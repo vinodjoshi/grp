@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\OptionController;
 use App\Http\Controllers\IndexController;
 use Illuminate\Support\Facades\Route;
 
+Route::post('/business-coach/recommend', [IndexController::class, 'recommend'])->name('business-coach.recommend');
 Route::get('/', [IndexController::class, 'index']);
 
 // API routes for select options

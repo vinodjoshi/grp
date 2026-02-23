@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Business Coach</title>
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -75,104 +78,128 @@
     <h1>AI Business Coach — Matching & Daily Enablement</h1>
 </header>
 
-<!-- USER PROFILE INPUT -->
 <section>
     <h2>Step 1: Your Profile</h2>
 
-    <label>Capital Band</label>
-    <select name="capital_band_id">
-        <option value="">-- Select Capital Band --</option>
-        @foreach($capitalBands as $band)
-            <option value="{{ $band->id }}">{{ $band->label }}</option>
-        @endforeach
-    </select>
+    <form id="businessCoachForm">
+        @csrf
 
-    <label>Time Availability</label>
-    <select name="time_availability_id">
-        <option value="">-- Select Time Availability --</option>
-        @foreach($timeAvailabilities as $time)
-            <option value="{{ $time->id }}">{{ $time->label }}</option>
-        @endforeach
-    </select>
+        <label>Capital Band</label>
+        <select name="capital_band">
+            <option value="">-- Select Capital Band --</option>
+            @foreach($capitalBands as $band)
+                <option value="{{ $band->label }}">{{ $band->label }}</option>
+            @endforeach
+        </select>
 
-    <label>Skills</label>
-    <div class="checkbox-group">
-        @foreach($skills as $skill)
-            <label><input type="checkbox" name="skills[]" value="{{ $skill->id }}"> {{ $skill->label }}</label>
-        @endforeach
-    </div>
+        <label>Time Availability</label>
+        <select name="time_availability">
+            <option value="">-- Select Time Availability --</option>
+            @foreach($timeAvailabilities as $time)
+                <option value="{{ $time->label }}">{{ $time->label }}</option>
+            @endforeach
+        </select>
 
-    <label>Risk Tolerance</label>
-    <select name="risk_tolerance_id">
-        <option value="">-- Select Risk Tolerance --</option>
-        @foreach($riskTolerances as $risk)
-            <option value="{{ $risk->id }}">{{ $risk->label }}</option>
-        @endforeach
-    </select>
+        <label>Skills</label>
+        <div class="checkbox-group">
+            @foreach($skills as $skill)
+                <label>
+                    <input type="checkbox" name="skills[]" value="{{ $skill->label }}">
+                    {{ $skill->label }}
+                </label>
+            @endforeach
+        </div>
 
-    <label>Assets You Have</label>
-    <div class="checkbox-group">
-        <label><input type="checkbox"> Stove</label>
-        <label><input type="checkbox"> Freezer</label>
-        <label><input type="checkbox"> Vehicle</label>
-        <label><input type="checkbox"> Sewing Machine</label>
-        <label><input type="checkbox"> Smartphone Only</label>
-    </div>
+        <label>Risk Tolerance</label>
+        <select name="risk_tolerance">
+            <option value="">-- Select Risk Tolerance --</option>
+            @foreach($riskTolerances as $risk)
+                <option value="{{ $risk->label }}">{{ $risk->label }}</option>
+            @endforeach
+        </select>
 
-    <button class="btn">Find My Best Businesses</button>
+        <label>Confidence to Sell</label>
+        <select name="confidence_to_sell">
+            <option value="">-- Select Confidence to Sell --</option>
+            @foreach($confidenceToSells as $confidence)
+                <option value="{{ $confidence->label }}">{{ $confidence->label }}</option>
+            @endforeach
+        </select>
+
+        <label>Assets You Have</label>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="assets[]" value="Stove"> Stove</label>
+            <label><input type="checkbox" name="assets[]" value="Freezer"> Freezer</label>
+            <label><input type="checkbox" name="assets[]" value="Vehicle"> Vehicle</label>
+            <label><input type="checkbox" name="assets[]" value="Sewing Machine"> Sewing Machine</label>
+            <label><input type="checkbox" name="assets[]" value="Smartphone Only"> Smartphone Only</label>
+        </div>
+
+        <button type="submit" class="btn">Find My Best Businesses</button>
+    </form>
+
+    <div id="results"></div>
 </section>
 
-<!-- MATCHING OUTPUT -->
-<section>
-    <h2>Step 2: Recommended Businesses</h2>
+<script>
+document.getElementById("businessCoachForm").addEventListener("submit", function(e) {
+    e.preventDefault();
 
-    <div class="result-card">
-        <h3>🍲 Home Tiffin Service</h3>
-        <strong>Why this fits:</strong>
-        <ul>
-            <li>Low startup cost matches your capital band</li>
-            <li>You selected cooking skills</li>
-            <li>Short cash cycle (daily income)</li>
-        </ul>
-        <strong>Key Risks:</strong>
-        <ul>
-            <li>Requires daily stock planning</li>
-            <li>Food safety discipline</li>
-        </ul>
-        <strong>First Action:</strong>
-        <p>List 5 dishes you can cook consistently.</p>
-    </div>
+    let formData = new FormData(this);
+    let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    <div class="result-card">
-        <h3>📱 Phone Repair Service</h3>
-        <strong>Why this fits:</strong>
-        <ul>
-            <li>Repair skills selected</li>
-            <li>Works in medium foot-traffic areas</li>
-        </ul>
-        <strong>Key Risks:</strong>
-        <ul>
-            <li>Needs tool investment</li>
-        </ul>
-        <strong>First Action:</strong>
-        <p>Write a list of tools required.</p>
-    </div>
-</section>
+    fetch('/business-coach/recommend', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
 
-<!-- DAILY DEVELOPMENT ENGINE -->
-<section>
-    <h2>Step 3: Today’s Micro Tasks</h2>
+        let resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = "";
 
-    <div class="result-card">
-        <h3>📅 Daily Discipline Tasks</h3>
-        <ul>
-            <li>Record today’s money in/out</li>
-            <li>Count stock of 5 fast-selling items</li>
-            <li>Check profit on 3 products</li>
-            <li>Record one customer sale</li>
-        </ul>
-    </div>
-</section>
+        if(data.success) {
+
+            data.data.options.forEach((option, index) => {
+
+                let card = `
+                    <div class="result-card">
+                        <h3>Option ${index + 1}: ${option.title}</h3>
+                        <strong>Subtype ID:</strong> ${option.subtype_id}<br><br>
+
+                        <strong>Why it fits:</strong>
+                        <ul>
+                            ${option.why_it_fits.map(item => `<li>${item}</li>`).join("")}
+                        </ul>
+
+                        <strong>Operating model:</strong>
+                        <p>${option.operating_model}</p>
+
+                        <strong>Complexity:</strong> ${option.complexity}<br>
+                        <strong>Risk band:</strong> ${option.risk_band}<br>
+                        <strong>Capital fit:</strong> ${option.capital_fit}<br><br>
+
+                        <strong>Why it’s strong:</strong>
+                        <p>${option.confidence_reason}</p>
+                    </div>
+                `;
+
+                resultsDiv.innerHTML += card;
+            });
+
+        } else {
+            resultsDiv.innerHTML = `<p style="color:red;">${data.error}</p>`;
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Something went wrong.");
+    });
+});
+</script>
 
 </body>
 </html>

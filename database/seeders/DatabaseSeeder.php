@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
             TimeAvailabilitySeeder::class,
             SkillSeeder::class,
             RiskToleranceSeeder::class,
+            ConfidenceToSellSeeder::class,
+            LocationSeeder::class,
             SuperAdminSeeder::class,
         ]);
     }

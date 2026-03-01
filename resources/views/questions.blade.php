@@ -182,6 +182,109 @@
         .option-info strong {
             color: #0c4a6e;
         }
+
+        .action-plan-container {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            margin-top: 20px;
+        }
+
+        .action-plan-container.show {
+            display: block;
+        }
+
+        .action-plan-content {
+            line-height: 1.8;
+            color: #334155;
+        }
+
+        .action-plan-content h2 {
+            color: #1e293b;
+            margin-top: 24px;
+            margin-bottom: 12px;
+            font-size: 18px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .action-plan-content h3 {
+            color: #0284c7;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .action-plan-content ul, .action-plan-content ol {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .action-plan-content li {
+            margin-bottom: 8px;
+        }
+
+        .action-plan-content p {
+            margin-bottom: 12px;
+        }
+
+        .action-plan-header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 8px 8px 0 0;
+            margin: -30px -30px 20px -30px;
+        }
+
+        .action-plan-header h2 {
+            margin: 0;
+            border: none;
+            padding: 0;
+            font-size: 24px;
+            color: white;
+        }
+
+        .action-plan-footer {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .btn-download {
+            background: #2563eb;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            flex: 1;
+        }
+
+        .btn-download:hover {
+            background: #1e40af;
+        }
+
+        .btn-back-to-home {
+            background: #64748b;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            flex: 1;
+        }
+
+        .btn-back-to-home:hover {
+            background: #475569;
+        }
     </style>
 </head>
 <body>
@@ -229,6 +332,22 @@
                 <button type="submit" class="btn btn-submit" id="submitBtn">Submit Answers</button>
             </div>
         </form>
+
+        <!-- Action Plan Container -->
+        <div id="actionPlanContainer" class="action-plan-container">
+            <div class="action-plan-header">
+                <h2>Your Personalized Action Plan</h2>
+            </div>
+            <div class="action-plan-content" id="actionPlanContent"></div>
+            <div id="planLoadingSpinner" style="display: none; text-align: center; padding: 40px;">
+                <div style="border: 4px solid #f3f4f6; border-top: 4px solid #2563eb; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; margin-bottom: 15px;"></div>
+                <p style="color: #64748b;">Creating your personalized action plan...</p>
+            </div>
+            <div class="action-plan-footer">
+                <button type="button" class="btn btn-download" onclick="downloadActionPlan()">Download as PDF</button>
+                <button type="button" class="btn btn-back-to-home" onclick="returnToHome()">Back to Home</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -251,7 +370,7 @@ async function loadGeneratedQuestions(businessTitle) {
     document.getElementById('loadingSpinner').style.display = 'block';
     
     try {
-        const response = await fetch('/api/generate-questions', {
+        const response = await fetch("{{ route('generate-questions') }}", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -283,7 +402,7 @@ function renderDynamicQuestions(questions) {
     const container = document.getElementById('dynamicQuestionsContainer');
     let html = '';
     
-    questions.slice(0, 20).forEach((q, index) => {
+    questions.slice(0, 10).forEach((q, index) => {
         const questionNum = index + 1;
         const optionsHtml = (q.options || q.answer_options || []).map((option, optIdx) => {
             const optionId = `dynamic_q${questionNum}_${optIdx}`;
@@ -320,17 +439,17 @@ function renderDynamicQuestions(questions) {
 
 // Update progress bar based on answered questions
 function updateProgress() {
-    const totalQuestions = 20;
+    const totalQuestions = 10;
     const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
     const progress = (answeredQuestions / totalQuestions) * 100;
     document.getElementById('progressFill').style.width = progress + '%';
 }
 
 // Form submission
-document.getElementById('questionsForm').addEventListener('submit', function(e) {
+document.getElementById('questionsForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const totalQuestions = 20;
+    const totalQuestions = 10;
     const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
 
     // Validate that all questions are answered
@@ -355,25 +474,96 @@ document.getElementById('questionsForm').addEventListener('submit', function(e) 
         answers[`question_${i}`] = formData.get(dynamicAnswerKey) || formData.get(fallbackAnswerKey) || '';
     }
 
-    // Prepare submission data
-    const submissionData = {
-        selectedOption: selectedOption,
-        answers: answers,
-        timestamp: new Date().toISOString()
-    };
+    // Hide form and show loading spinner
+    document.getElementById('questionsForm').style.display = 'none';
+    document.getElementById('actionPlanContainer').classList.add('show');
+    document.getElementById('planLoadingSpinner').style.display = 'block';
+    document.getElementById('actionPlanContent').innerHTML = '';
 
-    // Store in sessionStorage for now (you can send to backend if needed)
-    sessionStorage.setItem('submittedAnswers', JSON.stringify(submissionData));
+    try {
+        // Fetch action plan from backend
+        const response = await fetch("{{ route('generate-action-plan') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            },
+            body: JSON.stringify({
+                business_title: selectedOption.title,
+                answers: answers
+            })
+        });
 
-    // Show success message
-    alert('Thank you for completing the assessment! Your responses have been recorded.');
-
-    // Clear sessionStorage and redirect back to home
-    setTimeout(() => {
-        sessionStorage.removeItem('selectedOption');
-        window.location.href = '/';
-    }, 1500);
+        const data = await response.json();
+        
+        if (data.success && data.data.action_plan) {
+            // Format the action plan for display
+            const formattedPlan = formatActionPlan(data.data.action_plan);
+            document.getElementById('actionPlanContent').innerHTML = formattedPlan;
+            
+            // Store the action plan
+            sessionStorage.setItem('actionPlan', data.data.action_plan);
+            sessionStorage.setItem('submittedAnswers', JSON.stringify({
+                selectedOption: selectedOption,
+                answers: answers,
+                timestamp: new Date().toISOString()
+            }));
+        } else {
+            document.getElementById('actionPlanContent').innerHTML = '<p style="color: red;">Failed to generate action plan. Please try again.</p>';
+        }
+    } catch (error) {
+        console.error('Error generating action plan:', error);
+        document.getElementById('actionPlanContent').innerHTML = '<p style="color: red;">An error occurred while generating your action plan. Please try again.</p>';
+    } finally {
+        document.getElementById('planLoadingSpinner').style.display = 'none';
+    }
 });
+
+// Format the action plan for display
+function formatActionPlan(text) {
+    // Convert markdown-style headers and lists to HTML
+    let html = text
+        .replace(/\n/g, '</p><p>')
+        .replace(/<p><p>/g, '<p>')
+        .replace(/<\/p><\/p>/g, '</p>');
+    
+    // Convert headers (lines starting with #)
+    html = html.replace(/^<p>#{1,3}\s+(.+?)<\/p>/gm, '<h$1>$2</h$1>');
+    html = html.replace(/^<p>##\s+(.+?)<\/p>/gm, '<h3>$1</h3>');
+    html = html.replace(/^<p>#\s+(.+?)<\/p>/gm, '<h2>$1</h2>');
+    
+    // Wrap in paragraph tags where appropriate
+    html = '<p>' + html + '</p>';
+    
+    return html;
+}
+
+// Download action plan as PDF (basic implementation)
+function downloadActionPlan() {
+    const actionPlan = sessionStorage.getItem('actionPlan');
+    const businessTitle = selectedOption.title;
+    
+    if (!actionPlan) {
+        alert('Action plan not found.');
+        return;
+    }
+
+    const element = document.createElement('a');
+    const file = new Blob([actionPlan], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = `Action-Plan-${businessTitle.replace(/\s+/g, '-')}.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
+
+// Return to home
+function returnToHome() {
+    sessionStorage.removeItem('selectedOption');
+    sessionStorage.removeItem('submittedAnswers');
+    sessionStorage.removeItem('actionPlan');
+    window.location.href = '/';
+}
 
 // Go back button
 function goBack() {

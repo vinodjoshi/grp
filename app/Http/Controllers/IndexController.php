@@ -100,4 +100,32 @@ class IndexController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Generate a tailored action plan based on user responses.
+     */
+    public function generateActionPlan(Request $request)
+    {
+        $request->validate([
+            'business_title' => 'required|string|max:255',
+            'answers' => 'required|array',
+        ]);
+
+        try {
+            $result = $this->openAi->generateActionPlan(
+                $request->input('business_title'),
+                $request->input('answers')
+            );
+
+            return response()->json([
+                'success' => true,
+                'data' => $result,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

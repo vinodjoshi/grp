@@ -65,6 +65,13 @@
             background: #94a3b8;
             cursor: not-allowed;
         }
+        .btn-select {
+            margin-top: 15px;
+            background: #16a34a;
+        }
+        .btn-select:hover {
+            background: #15803d;
+        }
         .loader {
             display: none;
             margin-top: 20px;
@@ -94,11 +101,6 @@
         }
         ul {
             padding-left: 18px;
-        }
-        .options-label {
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -185,8 +187,6 @@
 </section>
 
 <script>
-let recommendedOptions = [];
-
 document.getElementById("businessCoachForm").addEventListener("submit", function(e) {
     e.preventDefault();
 
@@ -201,7 +201,7 @@ document.getElementById("businessCoachForm").addEventListener("submit", function
     submitBtn.disabled = true;
     resultsDiv.innerHTML = "";
 
-    fetch('{{ route("business-coach.recommend") }}', {
+    fetch('/business-coach/recommend', {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': csrfToken
@@ -215,33 +215,48 @@ document.getElementById("businessCoachForm").addEventListener("submit", function
         submitBtn.disabled = false;
 
         if(data.success) {
-            recommendedOptions = data.data.options;
 
-            let checkboxHTML = '<div class="options-label">Select an option:</div>';
-            checkboxHTML += '<div class="checkbox-group">';
+            data.data.options.forEach((option, index) => {
 
-            recommendedOptions.forEach((option, index) => {
-                checkboxHTML += '<label>';
-                checkboxHTML += '<input type="checkbox" class="option-checkbox" value="' + index + '" data-title="' + option.title.replace(/"/g, '&quot;') + '">';
-                checkboxHTML += ' ' + option.title;
-                checkboxHTML += '</label>';
+                let optionJson = JSON.stringify(option).replace(/"/g, '&quot;');
+                let card = `
+                    <div class="result-card">
+                        <h3>Option ${index + 1}: ${option.title}</h3>
+                        <strong>Subtype ID:</strong> ${option.subtype_id}<br><br>
+
+                        <strong>Why it fits:</strong>
+                        <ul>
+                            ${option.why_it_fits.map(item => `<li>${item}</li>`).join("")}
+                        </ul>
+
+                        <strong>Operating model:</strong>
+                        <p>${option.operating_model}</p>
+
+                        <strong>Complexity:</strong> ${option.complexity}<br>
+                        <strong>Risk band:</strong> ${option.risk_band}<br>
+                        <strong>Capital fit:</strong> ${option.capital_fit}<br><br>
+
+                        <strong>Why it’s strong:</strong>
+                        <p>${option.confidence_reason}</p>
+
+                        <button class="btn btn-select" data-option="${optionJson}">Select</button>
+                    </div>
+                `;
+
+                resultsDiv.innerHTML += card;
             });
 
-            checkboxHTML += '</div>';
-            resultsDiv.innerHTML = checkboxHTML;
-
-            // Add event listeners to checkboxes
-            document.querySelectorAll('.option-checkbox').forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    if(this.checked) {
-                        let selectedOption = recommendedOptions[this.value];
-                        window.location.href = '/recommendation/' + encodeURIComponent(selectedOption.title);
-                    }
+            // Add click event listeners to select buttons
+            document.querySelectorAll('.btn-select').forEach(button => {
+                button.addEventListener('click', function() {
+                    const optionJson = this.getAttribute('data-option').replace(/&quot;/g, '"');
+                    const option = JSON.parse(optionJson);
+                    selectOption(option);
                 });
             });
 
         } else {
-            resultsDiv.innerHTML = '<p style="color:red;">' + data.error + '</p>';
+            resultsDiv.innerHTML = `<p style="color:red;">${data.error}</p>`;
         }
     })
     .catch(err => {
@@ -252,6 +267,14 @@ document.getElementById("businessCoachForm").addEventListener("submit", function
         alert("Something went wrong.");
     });
 });
+
+function selectOption(option) {
+    // Store the option in sessionStorage for retrieval on the questions page
+    sessionStorage.setItem('selectedOption', JSON.stringify(option));
+    
+    // Redirect to the questions page
+    window.location.href = '/questions';
+}
 </script>
 
 </body>

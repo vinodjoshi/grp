@@ -68,4 +68,12 @@ class IndexController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Display questions for the selected business option.
+     */
+    public function questions()
+    {
+        return view('questions');
+    }
 }

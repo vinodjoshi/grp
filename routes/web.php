@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/business-coach/recommend', [IndexController::class, 'recommend'])->name('business-coach.recommend');
 Route::get('/', [IndexController::class, 'index']);
+Route::get('/questions', [IndexController::class, 'questions'])->name('questions');
 
 // API routes for select options
 Route::prefix('api/options')->group(function () {

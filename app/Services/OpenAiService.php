@@ -19,7 +19,7 @@ class OpenAiService
         Location: {$profileData['location']}
         Assets: " . implode(', ', $profileData['assets'] ?? []) . "
 
-        Suggest 3 best matching small business ideas.
+        Suggest 5 best matching small business ideas.
         ";
 
         $response = Http::withToken(env('OPENAI_API_KEY'))

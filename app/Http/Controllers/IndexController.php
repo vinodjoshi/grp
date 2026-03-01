@@ -76,4 +76,28 @@ class IndexController extends Controller
     {
         return view('questions');
     }
+
+    /**
+     * Generate assessment questions for a specific business using AI.
+     */
+    public function generateQuestions(Request $request)
+    {
+        $request->validate([
+            'business_title' => 'required|string|max:255',
+        ]);
+
+        try {
+            $result = $this->openAi->generateQuestionsForBusiness($request->input('business_title'));
+
+            return response()->json([
+                'success' => true,
+                'data' => $result,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

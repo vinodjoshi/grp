@@ -273,7 +273,7 @@ function selectOption(option) {
     sessionStorage.setItem('selectedOption', JSON.stringify(option));
     
     // Redirect to the questions page
-    window.location.href = '/questions';
+    window.location.href = '{{ route("questions") }}';
 }
 </script>
 

@@ -201,7 +201,7 @@ document.getElementById("businessCoachForm").addEventListener("submit", function
     submitBtn.disabled = true;
     resultsDiv.innerHTML = "";
 
-    fetch('/business-coach/recommend', {
+    fetch('{{ route("business-coach.recommend") }}', {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': csrfToken

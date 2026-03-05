@@ -58,6 +58,12 @@
             @endforeach
         </select>
 
+        <label>Your Address (Auto-detect)</label>
+        <input type="text" id="addressInput" name="user_address" placeholder="Start typing your address..." autocomplete="off">
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
+        <input type="hidden" id="formattedAddress" name="formatted_address">
+
         <label>Assets You Have</label>
         <div class="checkbox-group">
             <label><input type="checkbox" name="assets[]" value="Stove"> Stove</label>
@@ -82,6 +88,40 @@
 
 @section('scripts')
 <script>
+// Initialize Google Places Autocomplete
+function initAutocomplete() {
+    const input = document.getElementById('addressInput');
+    if (!input) return;
+
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+        fields: ['address_components', 'geometry', 'formatted_address', 'name']
+    });
+
+    autocomplete.addListener('place_changed', function() {
+        const place = autocomplete.getPlace();
+        
+        if (!place.geometry) {
+            console.log('No details available for input: ' + place.name);
+            return;
+        }
+
+        // Store coordinates and formatted address
+        document.getElementById('latitude').value = place.geometry.location.lat();
+        document.getElementById('longitude').value = place.geometry.location.lng();
+        document.getElementById('formattedAddress').value = place.formatted_address;
+    });
+}
+
+// Wait for Google Maps API to load
+window.initAutocomplete = initAutocomplete;
+if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+    initAutocomplete();
+} else {
+    window.addEventListener('load', function() {
+        setTimeout(initAutocomplete, 1000);
+    });
+}
+
 document.getElementById("businessCoachForm").addEventListener("submit", function(e) {
     e.preventDefault();
 
@@ -166,6 +206,14 @@ document.getElementById("businessCoachForm").addEventListener("submit", function
 function selectOption(option) {
     // Store the option in sessionStorage for retrieval on the questions page
     sessionStorage.setItem('selectedOption', JSON.stringify(option));
+    
+    // Also store user's location if provided
+    const userAddress = document.getElementById('formattedAddress')?.value || 
+                       document.getElementById('addressInput')?.value || 
+                       '';
+    if (userAddress) {
+        sessionStorage.setItem('userLocation', userAddress);
+    }
     
     // Redirect to the questions page
     window.location.href = '{{ route("questions") }}';

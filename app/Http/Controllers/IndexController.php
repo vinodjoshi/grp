@@ -52,6 +52,10 @@ class IndexController extends Controller
             'confidence_to_sell' => 'required|string',
             'location' => 'required|string',
             'assets' => 'array',
+            'user_address' => 'nullable|string',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'formatted_address' => 'nullable|string',
         ]);
 
         try {
@@ -109,12 +113,14 @@ class IndexController extends Controller
         $request->validate([
             'business_title' => 'required|string|max:255',
             'answers' => 'required|array',
+            'user_location' => 'nullable|string',
         ]);
 
         try {
             $result = $this->openAi->generateActionPlan(
                 $request->input('business_title'),
-                $request->input('answers')
+                $request->input('answers'),
+                $request->input('user_location', 'South Africa')
             );
 
             return response()->json([

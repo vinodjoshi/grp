@@ -188,6 +188,9 @@ document.getElementById('questionsForm').addEventListener('submit', async functi
     document.getElementById('actionPlanContent').innerHTML = '';
 
     try {
+        // Get user location from sessionStorage
+        const userLocation = sessionStorage.getItem('userLocation') || 'South Africa';
+        
         // Fetch action plan from backend
         const response = await fetch("{{ route('generate-action-plan') }}", {
             method: 'POST',
@@ -197,7 +200,8 @@ document.getElementById('questionsForm').addEventListener('submit', async functi
             },
             body: JSON.stringify({
                 business_title: selectedOption.title,
-                answers: answers
+                answers: answers,
+                user_location: userLocation
             })
         });
 

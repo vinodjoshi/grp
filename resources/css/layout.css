@@ -51,6 +51,17 @@ select, input[type="text"], input[type="number"] {
     border: 1px solid #ccc;
 }
 
+#addressInput {
+    background-color: #f9fafb;
+    border: 1px solid #d1d5db;
+}
+
+#addressInput:focus {
+    background-color: white;
+    border-color: #2563eb;
+    outline: none;
+}
+
 /* Buttons */
 .btn {
     padding: 12px 25px;

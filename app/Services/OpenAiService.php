@@ -123,15 +123,24 @@ class OpenAiService
         return json_decode($content, true);
     }
 
-    public function generateActionPlan(string $businessTitle, array $answers): array
+    public function generateActionPlan(string $businessTitle, array $answers, string $userLocation = 'South Africa'): array
     {
         $answersText = '';
         foreach ($answers as $questionNum => $answer) {
             $answersText .= "Question $questionNum: $answer\n";
         }
 
+        // Extract country/region from location
+        $locationParts = explode(',', $userLocation);
+        $country = trim(end($locationParts));
+        
+        // Determine currency based on location
+        $currency = $this->getCurrencyForLocation($country);
+        
         $userPrompt = "
         The user is interested in starting a '$businessTitle' business.
+        
+        Their location: $userLocation
         
         Here are their responses to an assessment questionnaire:
         $answersText
@@ -144,20 +153,20 @@ class OpenAiService
         3. Timeline for launch
         4. Essential tools or equipment needed
         5. First 30-day action items
-        6. Recommended suppliers and vendors from South Africa (with specific names, types, and what they provide)
+        6. Recommended suppliers and vendors from $country (with specific names, types, and what they provide)
         7. Potential challenges and how to overcome them
         8. Tips for success
         9. Estimated initial investment range
         
-        For suppliers, provide South African suppliers and vendors:
-        - Supplier name or type (e.g., South African wholesale markets, local online platforms, SA-based manufacturers, regional distributors)
+        For suppliers, provide local suppliers and vendors in $country:
+        - Supplier name or type (e.g., local wholesale markets, online platforms, manufacturers, regional distributors)
         - What they supply (materials, equipment, inventory, etc.)
-        - Location or region in South Africa (e.g., Cape Town, Johannesburg, Durban, or nationwide)
+        - Location or region (specific cities or nationwide)
         - Why they're recommended for this business
-        - Approximate pricing in ZAR (South African Rand) or cost range if applicable
+        - Approximate pricing in $currency or cost range if applicable
         - Contact information or where to find them (if known)
         
-        Make it practical, encouraging, and specific to their answers and the South African business context.
+        Make it practical, encouraging, and specific to their answers and the local business context in $userLocation.
         Format the response in a clear, well-structured way with sections and bullet points.
         ";
 
@@ -167,14 +176,14 @@ class OpenAiService
                 'messages' => [
                     [
                         'role' => 'system',
-                        'content' => '
-                        You are an AI Business Coach providing expert, practical guidance for entrepreneurs in South Africa.
+                        'content' => "
+                        You are an AI Business Coach providing expert, practical guidance for entrepreneurs in $userLocation.
                         Provide helpful, structured, and encouraging advice with actionable recommendations.
-                        Include specific South African supplier and vendor recommendations relevant to the business type.
-                        Consider the South African business environment, regulations, and market conditions.
-                        Provide pricing in South African Rand (ZAR) where applicable.
+                        Include specific local supplier and vendor recommendations relevant to the business type and location.
+                        Consider the local business environment, regulations, and market conditions.
+                        Provide pricing in $currency where applicable.
                         Format your response with clear sections using markdown-style formatting.
-                        ',
+                        ",
                     ],
                     [
                         'role' => 'user',
@@ -194,5 +203,24 @@ class OpenAiService
         return [
             'action_plan' => $content,
         ];
+    }
+
+    /**
+     * Get currency for a given location/country
+     */
+    private function getCurrencyForLocation(string $country): string
+    {
+        $currencies = [
+            'South Africa' => 'ZAR (South African Rand)',
+            'United States' => 'USD',
+            'United Kingdom' => 'GBP',
+            'India' => 'INR',
+            'Kenya' => 'KES',
+            'Nigeria' => 'NGN',
+            'Ghana' => 'GHS',
+            'Zimbabwe' => 'USD',
+        ];
+
+        return $currencies[$country] ?? 'local currency';
     }
 }

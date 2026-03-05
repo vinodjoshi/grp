@@ -1,10 +1,12 @@
 @extends('layouts.app')
 
+@section('header_subtitle')
+    <p>Algorithm  1: Business Fit Engine</p>
+@endsection
+
 @section('content')
 
 <section>
-    <h2>Step 1: Your Profile</h2>
-
     <form id="businessCoachForm">
         @csrf
 

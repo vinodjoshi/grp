@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('header_subtitle')
-    <p>Please answer the following 20 questions to help us understand if this business opportunity is right for you.</p>
+    <p>Algorighm 2 : Development Execution Engine</p>
 @endsection
 
 @section('content')

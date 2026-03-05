@@ -5,7 +5,7 @@ use App\Http\Controllers\IndexController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/business-coach/recommend', [IndexController::class, 'recommend'])->name('business-coach.recommend');
-Route::get('/', [IndexController::class, 'index']);
+Route::get('/', [IndexController::class, 'index'])->name('home');
 Route::get('/questions', [IndexController::class, 'questions'])->name('questions');
 Route::post('/generate-questions', [IndexController::class, 'generateQuestions'])->name('generate-questions');
 Route::post('/generate-action-plan', [IndexController::class, 'generateActionPlan'])->name('generate-action-plan');

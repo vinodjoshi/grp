@@ -50,7 +50,7 @@
             </div>
             <div class="action-plan-footer">
                 <button type="button" class="btn btn-download" onclick="downloadActionPlan()">Download as PDF</button>
-                <button type="button" class="btn btn-back-to-home" onclick="returnToHome()">Back to Home</button>
+                <a href="{{ route('home') }}" class="btn btn-back-to-home">Back to Home</a>
             </div>
         </div>
     </div>
@@ -59,7 +59,6 @@
 @endsection
 
 @section('scripts')
-// Display the selected business option
 <script>
 const selectedOption = JSON.parse(sessionStorage.getItem('selectedOption') || '{}');
 if (selectedOption.title) {

@@ -144,11 +144,20 @@ class OpenAiService
         3. Timeline for launch
         4. Essential tools or equipment needed
         5. First 30-day action items
-        6. Potential challenges and how to overcome them
-        7. Tips for success
-        8. Estimated initial investment range
+        6. Recommended suppliers and vendors from South Africa (with specific names, types, and what they provide)
+        7. Potential challenges and how to overcome them
+        8. Tips for success
+        9. Estimated initial investment range
         
-        Make it practical, encouraging, and specific to their answers.
+        For suppliers, provide South African suppliers and vendors:
+        - Supplier name or type (e.g., South African wholesale markets, local online platforms, SA-based manufacturers, regional distributors)
+        - What they supply (materials, equipment, inventory, etc.)
+        - Location or region in South Africa (e.g., Cape Town, Johannesburg, Durban, or nationwide)
+        - Why they're recommended for this business
+        - Approximate pricing in ZAR (South African Rand) or cost range if applicable
+        - Contact information or where to find them (if known)
+        
+        Make it practical, encouraging, and specific to their answers and the South African business context.
         Format the response in a clear, well-structured way with sections and bullet points.
         ";
 
@@ -159,8 +168,11 @@ class OpenAiService
                     [
                         'role' => 'system',
                         'content' => '
-                        You are an AI Business Coach providing expert, practical guidance.
-                        Provide helpful, structured, and encouraging advice.
+                        You are an AI Business Coach providing expert, practical guidance for entrepreneurs in South Africa.
+                        Provide helpful, structured, and encouraging advice with actionable recommendations.
+                        Include specific South African supplier and vendor recommendations relevant to the business type.
+                        Consider the South African business environment, regulations, and market conditions.
+                        Provide pricing in South African Rand (ZAR) where applicable.
                         Format your response with clear sections using markdown-style formatting.
                         ',
                     ],
@@ -170,7 +182,7 @@ class OpenAiService
                     ],
                 ],
                 'temperature' => 0.7,
-                'max_tokens' => 2500,
+                'max_tokens' => 3000,
             ]);
 
         if (! $response->successful()) {

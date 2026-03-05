@@ -3,9 +3,14 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class OpenAiService
 {
+    private const API_TIMEOUT = 60;
+    private const RETRY_ATTEMPTS = 3;
+    private const RETRY_DELAY = 1000; // milliseconds
+
     public function getBusinessRecommendations(array $profileData)
     {
         $userPrompt = "
@@ -22,8 +27,8 @@ class OpenAiService
         Suggest 5 best matching small business ideas.
         ';
 
-        $response = Http::withToken(env('OPENAI_API_KEY'))
-            ->post('https://api.openai.com/v1/chat/completions', [
+        try {
+            $response = $this->makeOpenAiRequest([
                 'model' => 'gpt-4o-mini',
                 'messages' => [
                     [
@@ -61,13 +66,13 @@ class OpenAiService
                 'max_tokens' => 800,
             ]);
 
-        if (! $response->successful()) {
-            throw new \Exception('OpenAI request failed: '.$response->body());
+            $content = $response->json()['choices'][0]['message']['content'];
+
+            return json_decode($content, true);
+        } catch (\Exception $e) {
+            Log::error('OpenAI getBusinessRecommendations error: ' . $e->getMessage());
+            throw new \Exception('Failed to get business recommendations. Please try again. Error: ' . $e->getMessage());
         }
-
-        $content = $response->json()['choices'][0]['message']['content'];
-
-        return json_decode($content, true);
     }
 
     public function generateQuestionsForBusiness(string $businessTitle): array
@@ -81,8 +86,8 @@ class OpenAiService
         Questions should be simple, clear, and answerable with straightforward responses.
         ";
 
-        $response = Http::withToken(env('OPENAI_API_KEY'))
-            ->post('https://api.openai.com/v1/chat/completions', [
+        try {
+            $response = $this->makeOpenAiRequest([
                 'model' => 'gpt-4o-mini',
                 'messages' => [
                     [
@@ -114,13 +119,13 @@ class OpenAiService
                 'max_tokens' => 2000,
             ]);
 
-        if (! $response->successful()) {
-            throw new \Exception('OpenAI request failed: '.$response->body());
+            $content = $response->json()['choices'][0]['message']['content'];
+
+            return json_decode($content, true);
+        } catch (\Exception $e) {
+            Log::error('OpenAI generateQuestionsForBusiness error: ' . $e->getMessage());
+            throw new \Exception('Failed to generate questions. Please try again. Error: ' . $e->getMessage());
         }
-
-        $content = $response->json()['choices'][0]['message']['content'];
-
-        return json_decode($content, true);
     }
 
     public function generateActionPlan(string $businessTitle, array $answers, string $userLocation = 'South Africa'): array
@@ -154,9 +159,6 @@ class OpenAiService
         4. Essential tools or equipment needed
         5. First 30-day action items
         6. Recommended suppliers and vendors from $country (with specific names, types, and what they provide)
-        7. Potential challenges and how to overcome them
-        8. Tips for success
-        9. Estimated initial investment range
         
         For suppliers, provide local suppliers and vendors in $country:
         - Supplier name or type (e.g., local wholesale markets, online platforms, manufacturers, regional distributors)
@@ -170,8 +172,8 @@ class OpenAiService
         Format the response in a clear, well-structured way with sections and bullet points.
         ";
 
-        $response = Http::withToken(env('OPENAI_API_KEY'))
-            ->post('https://api.openai.com/v1/chat/completions', [
+        try {
+            $response = $this->makeOpenAiRequest([
                 'model' => 'gpt-4o-mini',
                 'messages' => [
                     [
@@ -194,15 +196,75 @@ class OpenAiService
                 'max_tokens' => 3000,
             ]);
 
-        if (! $response->successful()) {
-            throw new \Exception('OpenAI request failed: '.$response->body());
+            $content = $response->json()['choices'][0]['message']['content'];
+
+            return [
+                'action_plan' => $content,
+            ];
+        } catch (\Exception $e) {
+            Log::error('OpenAI generateActionPlan error: ' . $e->getMessage());
+            throw new \Exception('Failed to generate action plan. Please try again. Error: ' . $e->getMessage());
         }
+    }
 
-        $content = $response->json()['choices'][0]['message']['content'];
+    /**
+     * Make OpenAI API request with retry logic and timeout handling
+     */
+    private function makeOpenAiRequest(array $payload)
+    {
+        $lastException = null;
+        
+        for ($attempt = 1; $attempt <= self::RETRY_ATTEMPTS; $attempt++) {
+            try {
+                $response = Http::withToken(env('OPENAI_API_KEY'))
+                    ->timeout(self::API_TIMEOUT)
+                    ->post('https://api.openai.com/v1/chat/completions', $payload);
 
-        return [
-            'action_plan' => $content,
-        ];
+                if ($response->successful()) {
+                    return $response;
+                }
+
+                // Handle non-successful response
+                $statusCode = $response->status();
+                $body = $response->body();
+                
+                // Log the error
+                Log::warning("OpenAI API error - Attempt $attempt: Status $statusCode, Body: $body");
+                
+                // If it's a 429 (rate limit) or 5xx error, retry
+                if ($statusCode === 429 || $statusCode >= 500) {
+                    if ($attempt < self::RETRY_ATTEMPTS) {
+                        sleep($attempt); // Exponential backoff
+                        continue;
+                    }
+                }
+                
+                throw new \Exception("OpenAI API error (HTTP $statusCode): $body");
+            } catch (\Illuminate\Http\Client\ConnectionException $e) {
+                // Network error - retry
+                $lastException = $e;
+                Log::warning("OpenAI connection error - Attempt $attempt: " . $e->getMessage());
+                
+                if ($attempt < self::RETRY_ATTEMPTS) {
+                    sleep($attempt); // Exponential backoff
+                    continue;
+                }
+                
+                throw new \Exception("Network error connecting to OpenAI API: " . $e->getMessage());
+            } catch (\Exception $e) {
+                $lastException = $e;
+                Log::error("OpenAI request error - Attempt $attempt: " . $e->getMessage());
+                
+                if ($attempt < self::RETRY_ATTEMPTS) {
+                    sleep($attempt);
+                    continue;
+                }
+                
+                throw $e;
+            }
+        }
+        
+        throw new \Exception("OpenAI API request failed after " . self::RETRY_ATTEMPTS . " attempts. Last error: " . ($lastException ? $lastException->getMessage() : 'Unknown error'));
     }
 
     /**

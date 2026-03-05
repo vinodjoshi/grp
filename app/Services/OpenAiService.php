@@ -78,7 +78,7 @@ class OpenAiService
     public function generateQuestionsForBusiness(string $businessTitle): array
     {
         $userPrompt = "
-        Generate 20 easy-to-understand assessment questions for someone considering to start a '$businessTitle' business.
+        Generate 10 easy-to-understand assessment questions for someone considering to start a '$businessTitle' business.
         
         These questions should help them assess their knowledge, readiness, and understanding of what's needed to start and run this business.
         Focus on practical aspects like: skills needed, initial setup, daily operations, costs, customer acquisition, time commitment, challenges, etc.

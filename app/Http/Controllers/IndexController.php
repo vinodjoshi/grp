@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CapitalBand;
 use App\Models\ConfidenceToSell;
 use App\Models\Location;
+use App\Models\Question;
 use App\Models\RiskTolerance;
 use App\Models\Skill;
 use App\Models\TimeAvailability;
@@ -91,11 +92,37 @@ class IndexController extends Controller
         ]);
 
         try {
-            $result = $this->openAi->generateQuestionsForBusiness($request->input('business_title'));
+            // Get AI-generated questions
+            $aiResult = $this->openAi->generateQuestionsForBusiness($request->input('business_title'));
+
+            // Fetch 2 questions from each of 5 categories from the database
+            $categories = ['FINANCE', 'SALES', 'OPERATIONS', 'MARKETING', 'RISKS'];
+            $databaseQuestions = [];
+
+            foreach ($categories as $category) {
+                $questions = Question::query()
+                    ->where('category', $category)
+                    ->inRandomOrder()
+                    ->limit(2)
+                    ->get(['id', 'question', 'category']);
+
+                foreach ($questions as $question) {
+                    $databaseQuestions[] = [
+                        'id' => $question->id,
+                        'question' => $question->question,
+                        'category' => $question->category,
+                        'options' => ['Yes', 'No', 'NA'],
+                        'source' => 'database',
+                    ];
+                }
+            }
 
             return response()->json([
                 'success' => true,
-                'data' => $result,
+                'data' => [
+                    'ai_questions' => $aiResult['questions'] ?? [],
+                    'database_questions' => $databaseQuestions,
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([

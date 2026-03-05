@@ -12,6 +12,8 @@ class SkillSeeder extends Seeder
      */
     public function run(): void
     {
+        Skill::query()->truncate();
+
         $skills = [
             'Cooking',
             'Sales',

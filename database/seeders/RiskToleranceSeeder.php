@@ -12,6 +12,7 @@ class RiskToleranceSeeder extends Seeder
      */
     public function run(): void
     {
+        RiskTolerance::query()->truncate();
         $levels = [
             ['label' => 'Low', 'level' => 1],
             ['label' => 'Medium', 'level' => 2],

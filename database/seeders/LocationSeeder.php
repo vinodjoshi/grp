@@ -12,6 +12,7 @@ class LocationSeeder extends Seeder
      */
     public function run(): void
     {
+        Location::query()->truncate();
         $locations = [
             ['label' => 'Taxi Rank / Transport Hub', 'description' => 'High foot traffic transportation hubs'],
             ['label' => 'School / College Area', 'description' => 'Educational institutions and student areas'],

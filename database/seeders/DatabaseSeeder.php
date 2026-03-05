@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             ConfidenceToSellSeeder::class,
             LocationSeeder::class,
             SuperAdminSeeder::class,
+            QuestionSeeder::class,
         ]);
     }
 }

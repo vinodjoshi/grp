@@ -12,6 +12,8 @@ class ConfidenceToSellSeeder extends Seeder
      */
     public function run(): void
     {
+        ConfidenceToSell::query()->truncate();
+
         $levels = [
             ['label' => 'Very Low', 'level' => 1],
             ['label' => 'Low', 'level' => 2],

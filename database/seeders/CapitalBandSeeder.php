@@ -12,6 +12,7 @@ class CapitalBandSeeder extends Seeder
      */
     public function run(): void
     {
+        CapitalBand::query()->truncate();
         $bands = [
             ['label' => 'R0-R500', 'min_amount' => 0, 'max_amount' => 500],
             ['label' => 'R500-R2000', 'min_amount' => 500, 'max_amount' => 2000],

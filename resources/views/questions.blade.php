@@ -90,9 +90,19 @@ async function loadGeneratedQuestions(businessTitle) {
 
         const data = await response.json();
         
-        if (data.success && data.data.questions && data.data.questions.length > 0) {
-            renderDynamicQuestions(data.data.questions);
-            document.getElementById('loadingSpinner').style.display = 'none';
+        if (data.success && data.data) {
+            const aiQuestions = data.data.ai_questions || [];
+            const databaseQuestions = data.data.database_questions || [];
+            
+            // Combine AI questions and database questions
+            const allQuestions = [...aiQuestions, ...databaseQuestions];
+            
+            if (allQuestions.length > 0) {
+                renderDynamicQuestions(allQuestions);
+                document.getElementById('loadingSpinner').style.display = 'none';
+            } else {
+                throw new Error('No questions generated');
+            }
         } else {
             throw new Error('No questions generated');
         }
@@ -109,7 +119,8 @@ function renderDynamicQuestions(questions) {
     const container = document.getElementById('dynamicQuestionsContainer');
     let html = '';
     
-    questions.slice(0, 10).forEach((q, index) => {
+    // Display all 20 questions (10 AI + 10 database)
+    questions.forEach((q, index) => {
         const questionNum = index + 1;
         const optionsHtml = (q.options || q.answer_options || []).map((option, optIdx) => {
             const optionId = `dynamic_q${questionNum}_${optIdx}`;
@@ -122,9 +133,13 @@ function renderDynamicQuestions(questions) {
             `;
         }).join('');
         
+        // Add category badge if present (for database questions)
+        const categoryBadge = q.category ? `<span class="category-badge">${q.category}</span>` : '';
+        
         html += `
             <div class="question-group">
                 <span class="question-number">${questionNum}</span>
+                ${categoryBadge}
                 <span class="question-text">${q.question}</span>
                 <div class="answer-options">
                     ${optionsHtml}
@@ -146,7 +161,7 @@ function renderDynamicQuestions(questions) {
 
 // Update progress bar based on answered questions
 function updateProgress() {
-    const totalQuestions = 10;
+    const totalQuestions = 20;
     const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
     const progress = (answeredQuestions / totalQuestions) * 100;
     document.getElementById('progressFill').style.width = progress + '%';
@@ -156,7 +171,7 @@ function updateProgress() {
 document.getElementById('questionsForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const totalQuestions = 10;
+    const totalQuestions = 20;
     const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
 
     // Validate that all questions are answered

@@ -12,6 +12,7 @@ class TimeAvailabilitySeeder extends Seeder
      */
     public function run(): void
     {
+        TimeAvailability::query()->truncate();
         $ranges = [
             ['label' => '<1h/day', 'min_hours_per_day' => 0, 'max_hours_per_day' => 1],
             ['label' => '1-3h/day', 'min_hours_per_day' => 1, 'max_hours_per_day' => 3],

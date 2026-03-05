@@ -1,0 +1,383 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+    padding: 20px;
+}
+
+header {
+    background: #1e293b;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 16px;
+    color: #e2e8f0;
+}
+
+h2 {
+    margin-top: 0;
+    color: #1e293b;
+}
+
+ul {
+    padding-left: 18px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+select, input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* Buttons */
+.btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+form .btn[type="submit"] {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background: #2563eb;
+    color: white;
+}
+
+.btn-submit {
+    background: #16a34a;
+    color: white;
+    flex: 1;
+}
+
+.btn-submit:hover {
+    background: #15803d;
+}
+
+.btn-select {
+    margin-top: 15px;
+    background: #16a34a;
+}
+
+.btn-select:hover {
+    background: #15803d;
+}
+
+.btn-back {
+    background: #94a3b8;
+    color: white;
+    flex: 1;
+}
+
+.btn-back:hover {
+    background: #64748b;
+}
+
+.btn-download {
+    background: #2563eb;
+    color: white;
+    flex: 1;
+}
+
+.btn-download:hover {
+    background: #1e40af;
+}
+
+.btn-back-to-home {
+    background: #64748b;
+    color: white;
+    flex: 1;
+}
+
+.btn-back-to-home:hover {
+    background: #475569;
+}
+
+/* Layout Components */
+section {
+    background: white;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #e2e8f0;
+}
+
+/* Loaders */
+.loader {
+    display: none;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.loader.active {
+    display: block;
+}
+
+.spinner {
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #2563eb;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 40px;
+    margin-bottom: 20px;
+}
+
+.loading-spinner div {
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #2563eb;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+    margin-bottom: 15px;
+}
+
+.loading-spinner p {
+    color: #64748b;
+}
+
+/* Cards */
+.result-card {
+    background: #f1f5f9;
+    padding: 15px;
+    border-radius: 6px;
+    margin-top: 15px;
+}
+
+/* Questions Form */
+.questions-form {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.question-group {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.question-group:last-child {
+    border-bottom: none;
+}
+
+.question-number {
+    display: inline-block;
+    background: #2563eb;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 30px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.question-text {
+    display: inline;
+    font-weight: bold;
+    color: #1e293b;
+}
+
+.answer-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+    margin-left: 40px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+}
+
+.radio-option input[type="radio"] {
+    margin-right: 10px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.radio-option label {
+    cursor: pointer;
+    font-size: 14px;
+    color: #475569;
+}
+
+/* Messages */
+.error-message {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 12px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: #e2e8f0;
+    border-radius: 2px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #2563eb;
+    transition: width 0.2s;
+}
+
+/* Info Boxes */
+.option-info {
+    background: #dbeafe;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border-left: 4px solid #0284c7;
+}
+
+.option-info strong {
+    color: #0c4a6e;
+}
+
+/* Action Plan */
+.action-plan-container {
+    display: none;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    margin-top: 20px;
+}
+
+.action-plan-container.show {
+    display: block;
+}
+
+.action-plan-content {
+    line-height: 1.8;
+    color: #334155;
+}
+
+.action-plan-content h2 {
+    color: #1e293b;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    font-size: 18px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 8px;
+}
+
+.action-plan-content h3 {
+    color: #0284c7;
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.action-plan-content ul, .action-plan-content ol {
+    margin-left: 20px;
+    margin-bottom: 12px;
+}
+
+.action-plan-content li {
+    margin-bottom: 8px;
+}
+
+.action-plan-content p {
+    margin-bottom: 12px;
+}
+
+.action-plan-header {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    color: white;
+    padding: 24px;
+    border-radius: 8px 8px 0 0;
+    margin: -30px -30px 20px -30px;
+}
+
+.action-plan-header h2 {
+    margin: 0;
+    border: none;
+    padding: 0;
+    font-size: 24px;
+    color: white;
+}
+
+.action-plan-footer {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #e2e8f0;
+}
+
+/* Animations */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

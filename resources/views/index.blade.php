@@ -1,114 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Business Coach</title>
+@extends('layouts.app')
 
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f5f7fa;
-        }
-        header {
-            background: #1e293b;
-            color: white;
-            padding: 15px 25px;
-        }
-        h1 {
-            margin: 0;
-            font-size: 20px;
-        }
-        section {
-            background: white;
-            margin: 20px;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        }
-        h2 {
-            margin-top: 0;
-            color: #1e293b;
-        }
-        label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        select, input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 5px;
-        }
-        .btn {
-            margin-top: 20px;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            background: #2563eb;
-            color: white;
-            cursor: pointer;
-        }
-        .btn:disabled {
-            background: #94a3b8;
-            cursor: not-allowed;
-        }
-        .btn-select {
-            margin-top: 15px;
-            background: #16a34a;
-        }
-        .btn-select:hover {
-            background: #15803d;
-        }
-        .loader {
-            display: none;
-            margin-top: 20px;
-            text-align: center;
-        }
-        .loader.active {
-            display: block;
-        }
-        .spinner {
-            border: 4px solid #f3f4f6;
-            border-top: 4px solid #2563eb;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .result-card {
-            background: #f1f5f9;
-            padding: 15px;
-            border-radius: 6px;
-            margin-top: 15px;
-        }
-        ul {
-            padding-left: 18px;
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <h1>AI Business Coach — Matching & Daily Enablement</h1>
-</header>
+@section('content')
 
 <section>
     <h2>Step 1: Your Profile</h2>
@@ -186,6 +78,9 @@
     <div id="results"></div>
 </section>
 
+@endsection
+
+@section('scripts')
 <script>
 document.getElementById("businessCoachForm").addEventListener("submit", function(e) {
     e.preventDefault();
@@ -276,6 +171,4 @@ function selectOption(option) {
     window.location.href = '{{ route("questions") }}';
 }
 </script>
-
-</body>
-</html>
+@endsection

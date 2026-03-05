@@ -1,298 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Business Questions - AI Business Coach</title>
+@extends('layouts.app')
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f7fa;
-            padding: 20px;
-        }
-
-        header {
-            background: #1e293b;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        header h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        header p {
-            font-size: 16px;
-            color: #e2e8f0;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .questions-form {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        }
-
-        .question-group {
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .question-group:last-child {
-            border-bottom: none;
-        }
-
-        .question-number {
-            display: inline-block;
-            background: #2563eb;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 30px;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .question-text {
-            display: inline;
-            font-weight: bold;
-            color: #1e293b;
-        }
-
-        .answer-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 12px;
-            margin-left: 40px;
-        }
-
-        .radio-option {
-            display: flex;
-            align-items: center;
-        }
-
-        .radio-option input[type="radio"] {
-            margin-right: 10px;
-            cursor: pointer;
-            width: 18px;
-            height: 18px;
-        }
-
-        .radio-option label {
-            cursor: pointer;
-            font-size: 14px;
-            color: #475569;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #e2e8f0;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-
-        .btn-submit {
-            background: #16a34a;
-            color: white;
-            flex: 1;
-        }
-
-        .btn-submit:hover {
-            background: #15803d;
-        }
-
-        .btn-submit:disabled {
-            background: #94a3b8;
-            cursor: not-allowed;
-        }
-
-        .btn-back {
-            background: #94a3b8;
-            color: white;
-            flex: 1;
-        }
-
-        .btn-back:hover {
-            background: #64748b;
-        }
-
-        .error-message {
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 12px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: #e2e8f0;
-            border-radius: 2px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #2563eb;
-            transition: width 0.2s;
-        }
-
-        .option-info {
-            background: #dbeafe;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            border-left: 4px solid #0284c7;
-        }
-
-        .option-info strong {
-            color: #0c4a6e;
-        }
-
-        .action-plan-container {
-            display: none;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-            margin-top: 20px;
-        }
-
-        .action-plan-container.show {
-            display: block;
-        }
-
-        .action-plan-content {
-            line-height: 1.8;
-            color: #334155;
-        }
-
-        .action-plan-content h2 {
-            color: #1e293b;
-            margin-top: 24px;
-            margin-bottom: 12px;
-            font-size: 18px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 8px;
-        }
-
-        .action-plan-content h3 {
-            color: #0284c7;
-            margin-top: 16px;
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
-
-        .action-plan-content ul, .action-plan-content ol {
-            margin-left: 20px;
-            margin-bottom: 12px;
-        }
-
-        .action-plan-content li {
-            margin-bottom: 8px;
-        }
-
-        .action-plan-content p {
-            margin-bottom: 12px;
-        }
-
-        .action-plan-header {
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-            color: white;
-            padding: 24px;
-            border-radius: 8px 8px 0 0;
-            margin: -30px -30px 20px -30px;
-        }
-
-        .action-plan-header h2 {
-            margin: 0;
-            border: none;
-            padding: 0;
-            font-size: 24px;
-            color: white;
-        }
-
-        .action-plan-footer {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #e2e8f0;
-        }
-
-        .btn-download {
-            background: #2563eb;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
-            flex: 1;
-        }
-
-        .btn-download:hover {
-            background: #1e40af;
-        }
-
-        .btn-back-to-home {
-            background: #64748b;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
-            flex: 1;
-        }
-
-        .btn-back-to-home:hover {
-            background: #475569;
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <h1>AI Business Coach — Assessment Questions</h1>
+@section('header_subtitle')
     <p>Please answer the following 20 questions to help us understand if this business opportunity is right for you.</p>
-</header>
+@endsection
+
+@section('content')
 
 <div class="container">
     <div class="questions-form">
@@ -308,17 +20,10 @@
             Please answer all questions before submitting.
         </div>
 
-        <div id="loadingSpinner" class="loading-spinner" style="display: none; text-align: center; padding: 40px; margin-bottom: 20px;">
-            <div style="border: 4px solid #f3f4f6; border-top: 4px solid #2563eb; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; margin-bottom: 15px;"></div>
-            <p style="color: #64748b;">Generating personalized assessment questions...</p>
+        <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+            <div></div>
+            <p>Generating personalized assessment questions...</p>
         </div>
-
-        <style>
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        </style>
 
         <form id="questionsForm">
             @csrf
@@ -339,9 +44,9 @@
                 <h2>Your Personalized Action Plan</h2>
             </div>
             <div class="action-plan-content" id="actionPlanContent"></div>
-            <div id="planLoadingSpinner" style="display: none; text-align: center; padding: 40px;">
-                <div style="border: 4px solid #f3f4f6; border-top: 4px solid #2563eb; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; margin-bottom: 15px;"></div>
-                <p style="color: #64748b;">Creating your personalized action plan...</p>
+            <div id="planLoadingSpinner" class="loading-spinner" style="display: none;">
+                <div></div>
+                <p>Creating your personalized action plan...</p>
             </div>
             <div class="action-plan-footer">
                 <button type="button" class="btn btn-download" onclick="downloadActionPlan()">Download as PDF</button>
@@ -351,8 +56,11 @@
     </div>
 </div>
 
-<script>
+@endsection
+
+@section('scripts')
 // Display the selected business option
+<script>
 const selectedOption = JSON.parse(sessionStorage.getItem('selectedOption') || '{}');
 if (selectedOption.title) {
     document.getElementById('optionInfo').style.display = 'block';
@@ -573,6 +281,4 @@ function goBack() {
     }
 }
 </script>
-
-</body>
-</html>
+@endsection

@@ -159,6 +159,7 @@ class OpenAiService
         4. Essential tools or equipment needed
         5. First 30-day action items
         6. Recommended suppliers and vendors from $country (with specific names, types, and what they provide)
+        7. Probability of success and key challenges to be aware of in the local context
         
         For suppliers, provide local suppliers and vendors in $country:
         - Supplier name or type (e.g., local wholesale markets, online platforms, manufacturers, regional distributors)

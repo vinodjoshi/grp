@@ -159,7 +159,7 @@ class OpenAiService
         4. Essential tools or equipment needed
         5. First 30-day action items
         6. Recommended suppliers and vendors from $country (with specific names, types, and what they provide)
-        7. Probability of success and key challenges to be aware of in the local context
+        7. Estimated probability of success as a percentage (0-100%) for the first 12 months, with a short explanation of assumptions and the top local challenges
         
         For suppliers, provide local suppliers and vendors in $country:
         - Supplier name or type (e.g., local wholesale markets, online platforms, manufacturers, regional distributors)
@@ -170,6 +170,12 @@ class OpenAiService
         - Contact information or where to find them (if known)
         
         Make it practical, encouraging, and specific to their answers and the local business context in $userLocation.
+        For the success estimate, do not use vague words only (like high/medium/low). You must provide a numeric percentage.
+        Add a section exactly titled: `Success Probability (12 Months)` and include:
+        - Estimated success probability: X%
+        - Confidence level: Low, Medium, or High
+        - Assumptions used for this estimate
+        - Top 3 local challenges that could lower this probability
         Format the response in a clear, well-structured way with sections and bullet points.
         ";
 

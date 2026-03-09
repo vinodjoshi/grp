@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\TailoredActionPlans\Schemas;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\RichEditor;
 use Filament\Schemas\Schema;
 
 class TailoredActionPlanForm
@@ -15,8 +15,9 @@ class TailoredActionPlanForm
                 Select::make('business_fit_option_id')
                     ->relationship('businessFitOption', 'title')
                     ->required(),
-                Textarea::make('text')
+                RichEditor::make('text')
                     ->required()
+                    ->extraInputAttributes(['class' => 'min-h-64'])
                     ->columnSpanFull(),
             ]);
     }

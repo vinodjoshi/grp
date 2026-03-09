@@ -22,6 +22,8 @@ class TailoredActionPlanResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'option';
 
+    protected static ?int $navigationSort = 20;
+
     public static function form(Schema $schema): Schema
     {
         return TailoredActionPlanForm::configure($schema);

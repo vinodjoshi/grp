@@ -22,6 +22,8 @@ class BusinessFitOptionResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    protected static ?int $navigationSort = 10;
+
     public static function form(Schema $schema): Schema
     {
         return BusinessFitOptionForm::configure($schema);

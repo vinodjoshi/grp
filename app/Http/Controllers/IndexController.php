@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CapitalBand;
+use App\Models\BusinessFitOption;
 use App\Models\ConfidenceToSell;
 use App\Models\Location;
 use App\Models\Question;
@@ -60,11 +61,15 @@ class IndexController extends Controller
         ]);
 
         try {
-            $result = $this->openAi->getBusinessRecommendations($request->all());
+            $options = BusinessFitOption::query()
+                ->orderBy('title')
+                ->get(['id', 'title', 'text']);
 
             return response()->json([
                 'success' => true,
-                'data' => $result,
+                'data' => [
+                    'options' => $options,
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([

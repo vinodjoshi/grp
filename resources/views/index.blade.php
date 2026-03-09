@@ -159,22 +159,7 @@ document.getElementById("businessCoachForm").addEventListener("submit", function
                 let card = `
                     <div class="result-card">
                         <h3>Option ${index + 1}: ${option.title}</h3>
-                        <strong>Subtype ID:</strong> ${option.subtype_id}<br><br>
-
-                        <strong>Why it fits:</strong>
-                        <ul>
-                            ${option.why_it_fits.map(item => `<li>${item}</li>`).join("")}
-                        </ul>
-
-                        <strong>Operating model:</strong>
-                        <p>${option.operating_model}</p>
-
-                        <strong>Complexity:</strong> ${option.complexity}<br>
-                        <strong>Risk band:</strong> ${option.risk_band}<br>
-                        <strong>Capital fit:</strong> ${option.capital_fit}<br><br>
-
-                        <strong>Why it’s strong:</strong>
-                        <p>${option.confidence_reason}</p>
+                        <p>${option.text}</p>
 
                         <button class="btn btn-select" data-option="${optionJson}">Select</button>
                     </div>

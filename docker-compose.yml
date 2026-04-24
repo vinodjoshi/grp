@@ -1,0 +1,68 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: grp-app
+    restart: unless-stopped
+    working_dir: /var/www/grp
+    volumes:
+      - ./application:/var/www/grp
+    ports:
+      - "8090:80"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: grp
+      DB_USERNAME: grp
+      DB_PASSWORD: Grp@2026
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - grp-net
+
+  mysql:
+    image: mysql:8.0
+    container_name: grp-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: grp
+      MYSQL_USER: grp
+      MYSQL_PASSWORD: Grp@2026
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3308:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - grp-net
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: grp-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - "8082:80"
+    depends_on:
+      - mysql
+    networks:
+      - grp-net
+
+volumes:
+  mysql_data:
+
+networks:
+  grp-net:
+    driver: bridge

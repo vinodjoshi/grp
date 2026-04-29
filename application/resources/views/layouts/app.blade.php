@@ -19,7 +19,7 @@
 
 @yield('content')
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHo3VgtWNPCH0x1FK_YcFyOIljeBT946o&libraries=places" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places" async defer></script>
 
 @yield('scripts')
 
